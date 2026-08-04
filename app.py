@@ -154,6 +154,26 @@ def quiz_result():
     })
 
 
+@app.route("/api/quiz/total")
+def quiz_total():
+    conn = get_db()
+    n = conn.execute("SELECT COUNT(*) FROM submissions").fetchone()[0]
+    conn.close()
+    return jsonify({"total": n})
+
+
+@app.route("/api/quiz/clear")
+def quiz_clear():
+    """清空全部答卷。需主持人口令，用于每场活动开始前重置系统。"""
+    if request.args.get("passcode", "") != HOST_PASSCODE:
+        return jsonify({"error": "口令不正确"}), 403
+    conn = get_db()
+    conn.execute("DELETE FROM submissions")
+    conn.commit()
+    conn.close()
+    return jsonify({"ok": True, "cleared": True})
+
+
 @app.route("/api/quiz/host")
 def quiz_host():
     if request.args.get("passcode", "") != HOST_PASSCODE:
