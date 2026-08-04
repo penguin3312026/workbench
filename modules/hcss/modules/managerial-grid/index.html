@@ -204,6 +204,7 @@
     <div class="tool-card">
       <h3>作答指引</h3>
       <p>下面 10 个管理情境，每题选一个你「最可能」采取的方案（凭第一直觉，不是「应该」怎么做）。提交后自动算出你的生产导向 P 与人本导向 H 总分，换算成 1–9 的方格精确坐标，并匹配风格与改善建议。</p>
+      <p class="tip">⚠️ 每题选项的展示顺序均已<b>随机打乱</b>，每次打开页面或点「重新打乱选项」都会变化，请勿记忆某个选项的位置。题目内容不变，打乱仅针对选项排列。</p>
       <div id="modeHint" class="mode-hint"></div>
       <div class="identity-fields" id="identityFields" style="display:none">
         <input type="text" id="uName" placeholder="姓名（可选，主持人汇总时显示）" maxlength="20">
@@ -214,6 +215,7 @@
     <div class="actions">
       <button class="btn btn-primary" id="btnSubmit" onclick="submitQuiz()">查看我的结果</button>
       <button class="btn btn-outline" onclick="resetQuiz()">重做</button>
+      <button class="btn btn-outline" onclick="reshuffle()">🔀 重新打乱选项</button>
     </div>
   </section>
 
@@ -301,6 +303,7 @@
 const params = new URLSearchParams(location.search);
 let MODE = params.get('mode') || '1';
 let SAVED_TOKEN = '';
+let displayOrder = [];  // displayOrder[i] = [origIdx...]：第 i 题每个选项按「展示位置」排列的原始下标
 
 const MODES = {
   '1': {
@@ -324,6 +327,7 @@ const MODES = {
 document.addEventListener('DOMContentLoaded', () => {
   renderModeBar();
   applyModeUI();
+  shuffleOptions();
   renderQuiz();
   renderRef();
 
@@ -378,6 +382,18 @@ function optionTag(o) {
   return '5,5';
 }
 
+// 打乱每题选项的展示顺序（不改变选项内容与分值）
+function shuffleOptions() {
+  displayOrder = GridCore.QUESTIONS.map(q => {
+    const arr = q.options.map((_, j) => j);
+    for (let k = arr.length - 1; k > 0; k--) {
+      const r = Math.floor(Math.random() * (k + 1));
+      [arr[k], arr[r]] = [arr[r], arr[k]];
+    }
+    return arr;
+  });
+}
+
 function renderQuiz() {
   const qz = document.getElementById('quiz');
   qz.innerHTML = '';
@@ -386,9 +402,14 @@ function renderQuiz() {
     const title = document.createElement('div');
     title.innerHTML = `<span class="qnum">Q${i+1}</span><span class="qtitle">${q.q}</span>`;
     card.appendChild(title);
-    q.options.forEach((o, j) => {
+    // 按打乱后的展示顺序渲染；radio 的 value 仍是「原始下标」，保证算分稳定
+    const order = displayOrder[i] || q.options.map((_, j) => j);
+    order.forEach((origIdx, pos) => {
+      const o = q.options[origIdx];
+      const letter = String.fromCharCode(65 + pos);              // 按展示位置重新编号 A/B/C/D/E
+      const dispText = o.text.replace(/^[A-E]\.\s*/, letter + '. '); // 去掉原编号，避免暴露位置
       const lab = document.createElement('label'); lab.className = 'opt';
-      lab.innerHTML = `<input type="radio" name="q${i}" value="${j}"><span class="badge" style="float:right;border-color:rgba(255,255,255,.2);color:var(--sub)">偏 ${optionTag(o)}</span>${o.text}`;
+      lab.innerHTML = `<input type="radio" name="q${i}" value="${origIdx}"><span class="badge" style="float:right;border-color:rgba(255,255,255,.2);color:var(--sub)">偏 ${optionTag(o)}</span>${escapeHtml(dispText)}`;
       lab.querySelector('input').addEventListener('change', () => {
         card.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
         lab.classList.add('sel');
@@ -397,6 +418,14 @@ function renderQuiz() {
     });
     qz.appendChild(card);
   });
+}
+
+// 重新打乱：清空已选，按新顺序渲染（题目内容不变，仅选项位置随机，防止被记住位置）
+function reshuffle() {
+  shuffleOptions();
+  resetQuiz();
+  renderQuiz();
+  showMsg('已重新打乱每题选项的展示顺序——题目内容不变，仅选项位置随机，防止被记住位置。', 'info');
 }
 
 /* ---------- 提交 ---------- */
