@@ -9,23 +9,16 @@
       "type": "static",
       "path": "welcome/index.html",
       "color": "#378ADD",
-      "tags": [
-        "指南"
-      ]
+      "tags": ["指南"]
     },
     {
       "id": "hcss",
       "title": "人力资本战略工作室",
       "type": "static",
-      "url": "/modules/hcss/index.html",
+      "path": "hcss/index.html",
       "icon": "◈",
       "desc": "HR 战略能力体系：战略目标分析、能力矩阵、HR 体系、管理方格测评",
-      "tags": [
-        "HR",
-        "战略",
-        "人才盘点",
-        "领导力"
-      ]
+      "tags": ["HR", "战略", "人才盘点", "领导力"]
     }
   ]
 }
