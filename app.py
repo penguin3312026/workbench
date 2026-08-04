@@ -49,6 +49,8 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             token TEXT UNIQUE NOT NULL,
             picks TEXT NOT NULL,
+            name TEXT,
+            dept TEXT,
             P INTEGER, H INTEGER,
             pc REAL, hc REAL,
             pt TEXT, ht TEXT,
@@ -58,6 +60,12 @@ def init_db():
             created_at TEXT DEFAULT (datetime('now'))
         )"""
     )
+    # 兼容旧表：补充 name/dept 列
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(submissions)")}
+    if "name" not in cols:
+        conn.execute("ALTER TABLE submissions ADD COLUMN name TEXT")
+    if "dept" not in cols:
+        conn.execute("ALTER TABLE submissions ADD COLUMN dept TEXT")
     conn.commit()
     conn.close()
 
@@ -104,13 +112,16 @@ def quiz_submit():
         return jsonify({"error": "答卷格式错误: " + str(e)}), 400
 
     token = uuid.uuid4().hex
+    name = (payload.get("name") or "").strip() or None
+    dept = (payload.get("dept") or "").strip() or None
     conn = get_db()
     conn.execute(
-        """INSERT INTO submissions (token, picks, P, H, pc, hc, pt, ht, type, weak, advice)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+        """INSERT INTO submissions (token, picks, name, dept, P, H, pc, hc, pt, ht, type, weak, advice)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
             token,
             json.dumps(answers),
+            name, dept,
             result["P"], result["H"], result["pc"], result["hc"],
             result["pt"], result["ht"], result["type"], result["weak"],
             json.dumps(result["advice"], ensure_ascii=False),
@@ -135,6 +146,7 @@ def quiz_result():
         return jsonify({"error": "未找到该结果，链接可能已失效"}), 404
     return jsonify({
         "token": row["token"],
+        "name": row["name"], "dept": row["dept"],
         "P": row["P"], "H": row["H"], "pc": row["pc"], "hc": row["hc"],
         "pt": row["pt"], "ht": row["ht"], "type": row["type"],
         "weak": row["weak"], "advice": json.loads(row["advice"]),
@@ -148,17 +160,16 @@ def quiz_host():
         return jsonify({"error": "口令不正确"}), 403
     conn = get_db()
     rows = conn.execute(
-        "SELECT P, H, pc, hc, type, created_at FROM submissions ORDER BY id DESC"
+        "SELECT name, dept, P, H, pc, hc, type, created_at FROM submissions ORDER BY id DESC"
     ).fetchall()
     conn.close()
     total = len(rows)
-    valid = [r for r in rows]
-    if not valid:
+    if not rows:
         return jsonify({"total": 0, "valid": 0, "avgP": 0, "avgH": 0, "dist": {}, "rows": []})
-    sumP = sum(r["P"] for r in valid)
-    sumH = sum(r["H"] for r in valid)
+    sumP = sum(r["P"] for r in rows)
+    sumH = sum(r["H"] for r in rows)
     dist = {}
-    for r in valid:
+    for r in rows:
         dist[r["type"]] = dist.get(r["type"], 0) + 1
     return jsonify({
         "total": total,
@@ -168,12 +179,13 @@ def quiz_host():
         "dist": dist,
         "rows": [
             {
+                "name": r["name"], "dept": r["dept"],
                 "created_at": r["created_at"],
                 "P": r["P"], "H": r["H"],
                 "pc": r["pc"], "hc": r["hc"],
                 "type": r["type"],
             }
-            for r in valid
+            for r in rows
         ],
     })
 
