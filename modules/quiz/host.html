@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主持人汇总 · 管理方格测评</title>
+<style>
+  :root{
+    --bg:#0f1117; --surface:#171a21; --surface2:#1f232c; --border:#2a2f3a;
+    --text:#e6edf3; --muted:#9aa4b2; --accent:#378ADD; --gold:#e3b341;
+    --green:#3fb950; --red:#f85149; --info:#58a6ff; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.6;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px}
+  .tip{color:var(--muted);font-size:13px}
+  .gate{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:420px;margin:40px auto;text-align:center}
+  .gate input{width:100%;padding:13px;border-radius:10px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--text);font-size:16px;margin:12px 0;text-align:center}
+  .gate button{width:100%;padding:13px;border:0;border-radius:10px;background:var(--accent);
+    color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
+  .stat{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}
+  .stat .box{flex:1;min-width:120px;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:14px}
+  .stat .lab{font-size:12px;color:var(--muted)}
+  .stat .val{font-size:26px;font-weight:800;margin-top:4px}
+  .dist{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin:14px 0}
+  .dist h3{margin:0 0 12px;font-size:15px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .bar-row .name{width:130px;flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar{flex:1;height:12px;background:var(--surface2);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%}
+  .bar-row .cnt{width:48px;text-align:right;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+  th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600}
+  .actions{margin:18px 0;display:flex;gap:10px;flex-wrap:wrap}
+  .actions button{padding:10px 16px;border:1px solid var(--border);border-radius:10px;
+    background:var(--surface2);color:var(--text);font-size:14px;cursor:pointer}
+  .actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <h1>主持人汇总</h1>
+  <p class="tip">输入主持人口令查看实时参与情况（手机 / 电脑均可）</p>
+  <input id="passcode" type="password" placeholder="请输入口令" autocomplete="off">
+  <button id="btnEnter">进入汇总</button>
+  <div class="err" id="gateErr"></div>
+  <p class="tip" style="margin-top:14px"><a href="index.html" style="color:var(--accent)">← 返回答题入口</a></p>
+</div>
+
+<div id="panel" class="hidden">
+  <h1>管理方格 · 实时汇总</h1>
+  <p class="tip" id="updated"></p>
+  <div class="stat" id="stat"></div>
+  <div class="dist">
+    <h3>风格分布</h3>
+    <div id="distBox"></div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="btnRefresh">刷新</button>
+    <button id="btnCsv">导出明细 CSV</button>
+    <button id="btnLogout">退出</button>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>提交时间</th><th>P</th><th>H</th><th>坐标(P,H)</th><th>风格</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script>
+const API='/api/quiz';
+let PASSCODE='';
+
+function styleColor(name){
+  if(name.includes('9,9')) return 'var(--green)';
+  if(name.includes('9,1')) return 'var(--red)';
+  if(name.includes('1,9')) return 'var(--info)';
+  if(name.includes('5,5')) return 'var(--purple)';
+  if(name.includes('1,1')) return '#6e7681';
+  return 'var(--gold)';
+}
+
+async function load(){
+  const r = await fetch(API + '/host?passcode=' + encodeURIComponent(PASSCODE));
+  const j = await r.json();
+  if(!r.ok) throw new Error(j.error || '加载失败');
+  render(j);
+}
+
+function render(j){
+  document.getElementById('stat').innerHTML = `
+    <div class="box"><div class="lab">有效答卷</div><div class="val">${j.valid}</div></div>
+    <div class="box"><div class="lab">平均 生产导向 P</div><div class="val">${j.avgP}</div></div>
+    <div class="box"><div class="lab">平均 人本导向 H</div><div class="val">${j.avgH}</div></div>`;
+  const entries = Object.entries(j.dist).sort((a,b)=>b[1]-a[1]);
+  const max = Math.max(...entries.map(e=>e[1]),1);
+  document.getElementById('distBox').innerHTML = entries.map(([k,v])=>`
+    <div class="bar-row">
+      <div class="name">${k}</div>
+      <div class="bar"><i style="width:${v/max*100}%;background:${styleColor(k)}"></i></div>
+      <div class="cnt">${v} 人</div>
+    </div>`).join('');
+  document.getElementById('tbody').innerHTML = j.rows.map((r,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.created_at||'—'}</td>
+      <td>${r.P}</td><td>${r.H}</td>
+      <td style="color:var(--muted)">(${r.pc.toFixed(1)}, ${r.hc.toFixed(1)})</td>
+      <td>${r.type}</td>
+    </tr>`).join('');
+  document.getElementById('updated').textContent = '最近更新：' + new Date().toLocaleString('zh-CN');
+}
+
+function exportCsv(j){
+  const head=['序号','提交时间','P','H','坐标P','坐标H','风格'];
+  const lines=[head];
+  j.rows.forEach((r,i)=>lines.push([i+1, r.created_at||'', r.P, r.H, r.pc.toFixed(1), r.hc.toFixed(1), r.type]));
+  const csv='﻿'+lines.map(row=>row.map(c=>{
+    const s=String(c); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+  }).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='管理方格_汇总.csv'; a.click();
+}
+
+async function enter(){
+  PASSCODE = document.getElementById('passcode').value.trim();
+  if(!PASSCODE){ document.getElementById('gateErr').textContent='请输入口令'; return; }
+  try{ await load(); }
+  catch(e){ document.getElementById('gateErr').textContent='⚠ '+e.message; return; }
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('panel').classList.remove('hidden');
+}
+
+document.getElementById('btnEnter').addEventListener('click', enter);
+document.getElementById('passcode').addEventListener('keydown', e=>{ if(e.key==='Enter') enter(); });
+document.getElementById('btnRefresh').addEventListener('click', ()=>load().catch(e=>alert(e.message)));
+document.getElementById('btnLogout').addEventListener('click', ()=>location.reload());
+document.getElementById('btnCsv').addEventListener('click', ()=>{
+  fetch(API + '/host?passcode=' + encodeURIComponent(PASSCODE))
+    .then(r=>r.json()).then(exportCsv).catch(e=>alert(e.message));
+});
+</script>
+</body>
+</html>
