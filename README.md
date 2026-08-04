@@ -71,11 +71,12 @@ python <skills>/workbench-integrator/integrate_module.py \
 - **公网单入口**：所有模块共用一个 Railway URL，不用为每个工具单独部署。
 - **迁移现有内容**：静态工具直接丢 `modules/`；Railway 后端服务用 iframe 接；Skill 转成展示页或文档入口。
 
-## 模块：管理方格扫码测评（quiz）
-自带后端（Flask 路由 + SQLite），无需问卷星。流程：
-1. 投屏/发群 `modules/quiz/index.html` 的二维码 → 手机扫码即答。
-2. 提交后生成 `lookup.html?token=xxx` 专属结果页 + 结果二维码，本人扫码即看，无需微信授权。
-3. 主持人用口令（`QUIZ_HOST_PASSCODE`，默认 `hcss2026`，可环境变量覆盖）进 `host.html` 看实时汇总，手机/电脑通用，可导出 CSV。
+## 模块：管理方格测评（在 `modules/hcss/modules/managerial-grid/` 内，三层模式）
+已并入「人力资本战略工作室」，无需问卷星。自带后端（Flask 路由 + SQLite），三种模式通过页面 `?mode=1|2|3` 切换：
+1. **第 1 层 个人自测**：浏览器本地算分，零存储零后端，答完即看结果。
+2. **第 2 层 会后复查**：提交后生成 `?token=xxx` 专属结果页 + 结果二维码，本人扫码即看，无需微信授权。
+3. **第 3 层 团队汇总**：可选填姓名/部门；主持人点「主持人入口」输入口令（`QUIZ_HOST_PASSCODE`，默认 `hcss2026`，可环境变量覆盖）看实时分布，手机/电脑通用，可导出 CSV。
+- **防记忆**：每题选项展示顺序默认随机打乱，并提供「重新打乱选项」按钮，题目内容不变、仅选项排列随机；打乱不影响算分（radio 值保留原始下标）。
 - 算分逻辑：`quiz_core.py`（与 `modules/hcss/assets/js/grid-core.js` 算法逐字段对齐）。
 - 存储：`data/quiz.db`（运行时生成，首次访问自动建表；Railway 免费版为临时盘，重启会清空，活动前清空重来即可）。
 
