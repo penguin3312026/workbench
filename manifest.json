@@ -1,0 +1,15 @@
+{
+  "title": "我的工作台",
+  "subtitle": "所有工具与服务的统一公网入口",
+  "modules": [
+    {
+      "id": "welcome",
+      "title": "使用说明",
+      "desc": "如何新增模块到这个工作台",
+      "type": "static",
+      "path": "welcome/index.html",
+      "color": "#378ADD",
+      "tags": ["指南"]
+    }
+  ]
+}
