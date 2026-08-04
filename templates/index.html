@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>工作台</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #171a21;
+    --surface-2: #1f232c;
+    --border: #2a2f3a;
+    --text: #e6edf3;
+    --muted: #9aa4b2;
+    --accent: #378ADD;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    padding: 40px 32px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 6px; font-size: 26px; font-weight: 600; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 32px 64px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+  .avatar {
+    width: 44px; height: 44px;
+    border-radius: 11px;
+    flex: 0 0 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 600; color: #fff;
+  }
+  .card-body { min-width: 0; }
+  .card-title { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .card-desc { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 11px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 2px 9px;
+  }
+  .badge {
+    font-size: 10px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 1px 6px; margin-left: 6px; vertical-align: middle;
+  }
+  /* modal */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(8,10,14,.82);
+    display: none; align-items: stretch; justify-content: center;
+    z-index: 50; padding: 24px;
+  }
+  .overlay.open { display: flex; }
+  .frame-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%; max-width: 1200px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .frame-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+  }
+  .frame-bar strong { font-size: 14px; }
+  .frame-bar button {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; cursor: pointer; font-size: 13px;
+  }
+  .frame-bar button:hover { color: var(--text); border-color: var(--accent); }
+  iframe { flex: 1; width: 100%; border: 0; background: #fff; min-height: 70vh; }
+  .empty { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1 id="wb-title">工作台</h1>
+    <p id="wb-subtitle"></p>
+  </header>
+  <main>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="frame-wrap">
+      <div class="frame-bar">
+        <strong id="frame-title">模块</strong>
+        <button onclick="closeFrame()">关闭</button>
+      </div>
+      <iframe id="frame" src="about:blank"></iframe>
+    </div>
+  </div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  const frame = document.getElementById('frame');
+  const frameTitle = document.getElementById('frame-title');
+
+  function openFrame(url, title) {
+    frameTitle.textContent = title || '模块';
+    frame.src = url;
+    overlay.classList.add('open');
+  }
+  function closeFrame() {
+    overlay.classList.remove('open');
+    frame.src = 'about:blank';
+  }
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeFrame(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFrame(); });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function render(m) {
+    document.getElementById('wb-title').textContent = m.title || '工作台';
+    document.getElementById('wb-subtitle').textContent = m.subtitle || '';
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    const mods = m.modules || [];
+    if (!mods.length) {
+      grid.innerHTML = '<div class="empty">还没有模块。运行整合 Skill 把第一个模块加进来。</div>';
+      return;
+    }
+    for (const mod of mods) {
+      const color = mod.color || '#378ADD';
+      const initial = (mod.title || '?').trim().charAt(0);
+      const tags = (mod.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('');
+      const badge = mod.type === 'link' ? '<span class="badge">外链</span>'
+                  : mod.type === 'iframe' ? '<span class="badge">嵌入</span>'
+                  : '<span class="badge">静态</span>';
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML =
+        '<div class="avatar" style="background:' + color + '">' + esc(initial) + '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-title">' + esc(mod.title) + badge + '</div>' +
+          '<div class="card-desc">' + esc(mod.desc || '') + '</div>' +
+          '<div class="tags">' + tags + '</div>' +
+        '</div>';
+      card.addEventListener('click', () => openModule(mod));
+      grid.appendChild(card);
+    }
+  }
+
+  function openModule(mod) {
+    if (mod.type === 'link') {
+      window.open(mod.url, '_blank');
+    } else if (mod.type === 'iframe') {
+      openFrame(mod.url, mod.title);
+    } else {
+      // static
+      openFrame('/modules/' + mod.path, mod.title);
+    }
+  }
+
+  fetch('/api/manifest')
+    .then(r => r.json())
+    .then(render)
+    .catch(() => {
+      document.getElementById('grid').innerHTML =
+        '<div class="empty">无法加载 manifest.json，请检查服务是否启动。</div>';
+    });
+</script>
+</body>
+</html>
