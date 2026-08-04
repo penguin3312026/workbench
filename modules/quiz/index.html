@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>管理方格测评 · 扫码答题</title>
+<style>
+  :root{
+    --bg:#0f1117; --surface:#171a21; --surface2:#1f232c; --border:#2a2f3a;
+    --text:#e6edf3; --muted:#9aa4b2; --accent:#378ADD; --gold:#e3b341;
+    --green:#3fb950; --red:#f85149; --info:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.6;padding:18px 16px 60px;-webkit-tap-highlight-color:transparent}
+  .head{text-align:center;margin-bottom:18px}
+  .head h1{font-size:21px;margin:0 0 4px}
+  .head p{color:var(--muted);font-size:13px;margin:0}
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:16px;margin-bottom:14px}
+  .qnum{display:inline-block;background:var(--accent);color:#fff;font-size:12px;
+    font-weight:700;border-radius:6px;padding:1px 8px;margin-right:8px}
+  .qtitle{font-size:15px;font-weight:600}
+  .opt{display:block;border:1px solid var(--border);border-radius:10px;padding:11px 13px;
+    margin-top:9px;font-size:14px;cursor:pointer;transition:.12s;background:var(--surface2)}
+  .opt:active{transform:scale(.99)}
+  .opt.sel{border-color:var(--accent);background:#1b2735}
+  .opt input{display:none}
+  .submit{position:fixed;left:16px;right:16px;bottom:14px;
+    background:var(--accent);color:#fff;border:0;border-radius:12px;
+    padding:15px;font-size:16px;font-weight:700;cursor:pointer}
+  .submit:disabled{opacity:.5}
+  /* 结果态 */
+  .done{display:none;text-align:center}
+  .done .big{font-size:22px;font-weight:800;margin:6px 0}
+  .qrbox{background:#fff;border-radius:14px;padding:16px;display:inline-block;margin:14px 0}
+  .qrbox img{display:block;width:220px;height:220px}
+  .tip{color:var(--muted);font-size:13px}
+  .ghost{display:inline-block;margin-top:10px;color:var(--accent);font-size:14px;
+    border:1px solid var(--border);border-radius:10px;padding:10px 18px;text-decoration:none}
+  .err{color:var(--red);font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div id="quizView">
+  <div class="head">
+    <h1>管理方格 · 领导力风格测评</h1>
+    <p>10 道情境题，凭直觉作答，立即生成你的专属结果</p>
+  </div>
+  <div id="quiz"></div>
+  <div class="err" id="err"></div>
+  <button class="submit" id="btnSubmit" disabled>提交并生成我的结果</button>
+</div>
+
+<div class="done" id="doneView">
+  <div class="head"><h1>提交成功 🎉</h1></div>
+  <p class="tip">扫码查看你的专属测评结果（无需登录，手机随时可看）</p>
+  <div class="qrbox"><div id="qr"></div></div>
+  <div>
+    <a class="ghost" id="openLink" href="#">点此直接查看结果 →</a>
+  </div>
+  <p class="tip" style="margin-top:14px">把上方二维码保存或转发，自己扫码即可看；也可截图发群里。</p>
+  <p class="tip"><a class="ghost" href="host.html" style="border-style:dashed">主持人汇总入口（需口令）</a></p>
+</div>
+
+<script src="assets/js/qrcode.js"></script>
+<script>
+const API = '/api/quiz';
+let QUESTIONS = [];
+
+function render(questions){
+  const box = document.getElementById('quiz');
+  questions.forEach((q, i) => {
+    const card = document.createElement('div'); card.className = 'qcard';
+    const title = document.createElement('div');
+    title.innerHTML = `<span class="qnum">Q${i+1}</span><span class="qtitle">${q.q}</span>`;
+    card.appendChild(title);
+    q.options.forEach((opt, j) => {
+      const lab = document.createElement('label'); lab.className = 'opt';
+      lab.innerHTML = `<input type="radio" name="q${i}" value="${j}"><span>${opt}</span>`;
+      lab.addEventListener('click', () => {
+        card.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+        lab.classList.add('sel');
+        checkComplete();
+      });
+      card.appendChild(lab);
+    });
+    box.appendChild(card);
+  });
+}
+
+function checkComplete(){
+  let done = 0;
+  for(let i=0;i<QUESTIONS.length;i++){
+    if(document.querySelector(`input[name="q${i}"]:checked`)) done++;
+  }
+  document.getElementById('btnSubmit').disabled = (done !== QUESTIONS.length);
+}
+
+function getAnswers(){
+  const a = [];
+  for(let i=0;i<QUESTIONS.length;i++){
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!sel) return null;
+    a.push(parseInt(sel.value,10));
+  }
+  return a;
+}
+
+function makeQR(text){
+  // qrcode-generator: typeNumber 0 = 自动, 纠错 M
+  const qr = qrcode(0, 'M');
+  qr.addData(text);
+  qr.make();
+  return qr.createDataURL(6, 10);
+}
+
+async function submit(){
+  const answers = getAnswers();
+  if(!answers) return;
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.textContent = '生成中…';
+  try {
+    const r = await fetch(API + '/submit', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({answers})
+    });
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.error || '提交失败');
+    const url = location.origin + '/modules/quiz/lookup.html?token=' + data.token;
+    document.getElementById('qr').innerHTML = `<img src="${makeQR(url)}" alt="结果二维码">`;
+    document.getElementById('openLink').href = url;
+    document.getElementById('quizView').style.display = 'none';
+    document.getElementById('doneView').style.display = 'block';
+  } catch(e){
+    document.getElementById('err').textContent = e.message;
+    btn.disabled = false; btn.textContent = '提交并生成我的结果';
+  }
+}
+
+async function init(){
+  try {
+    const r = await fetch(API + '/questions');
+    const data = await r.json();
+    QUESTIONS = data.questions;
+    render(QUESTIONS);
+    document.getElementById('btnSubmit').addEventListener('click', submit);
+  } catch(e){
+    document.getElementById('err').textContent = '加载题目失败：' + e.message;
+  }
+}
+init();
+</script>
+</body>
+</html>
