@@ -66,3 +66,12 @@ python <skills>/workbench-integrator/integrate_module.py \
 - **壳稳定、模块随到随接**：先部署空白 Shell（含 welcome 示例），模块从不同时候开发、逐个接入。
 - **公网单入口**：所有模块共用一个 Railway URL，不用为每个工具单独部署。
 - **迁移现有内容**：静态工具直接丢 `modules/`；Railway 后端服务用 iframe 接；Skill 转成展示页或文档入口。
+
+## 模块：管理方格扫码测评（quiz）
+自带后端（Flask 路由 + SQLite），无需问卷星。流程：
+1. 投屏/发群 `modules/quiz/index.html` 的二维码 → 手机扫码即答。
+2. 提交后生成 `lookup.html?token=xxx` 专属结果页 + 结果二维码，本人扫码即看，无需微信授权。
+3. 主持人用口令（`QUIZ_HOST_PASSCODE`，默认 `hcss2026`，可环境变量覆盖）进 `host.html` 看实时汇总，手机/电脑通用，可导出 CSV。
+- 算分逻辑：`quiz_core.py`（与 `modules/hcss/assets/js/grid-core.js` 算法逐字段对齐）。
+- 存储：`data/quiz.db`（运行时生成，首次访问自动建表；Railway 免费版为临时盘，重启会清空，活动前清空重来即可）。
+
