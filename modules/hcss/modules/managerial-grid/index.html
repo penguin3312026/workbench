@@ -5,6 +5,144 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>管理方格测评 | 人力资本战略工作室</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <style>
+    .mode-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .mode-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--sub);
+      cursor: pointer;
+      text-align: left;
+      transition: all .2s;
+    }
+    .mode-btn:hover { background: rgba(255,255,255,.08); }
+    .mode-btn.active {
+      background: rgba(227,179,65,.12);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .mode-btn .title { font-weight: 700; display: block; margin-bottom: 2px; }
+    .mode-btn .desc { font-size: 12px; opacity: .8; }
+
+    .mode-hint {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: rgba(88,166,255,.10);
+      border: 1px solid rgba(88,166,255,.25);
+      color: var(--info);
+      font-size: 14px;
+    }
+
+    .identity-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .identity-fields input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.2);
+      color: #fff;
+      font-size: 14px;
+    }
+    @media (max-width: 560px) { .identity-fields { grid-template-columns: 1fr; } }
+
+    .host-entry {
+      text-align: right;
+      margin-bottom: 18px;
+    }
+    .host-entry button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.05);
+      color: var(--sub);
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .host-entry button:hover { color: #fff; background: rgba(255,255,255,.10); }
+
+    .qr-wrap { text-align: center; margin: 18px 0; }
+    .qr-wrap img, .qr-wrap canvas, .qr-wrap svg {
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      max-width: 220px;
+    }
+    .share-link {
+      display: inline-block;
+      word-break: break-all;
+      font-size: 13px;
+      color: var(--info);
+      text-decoration: underline;
+      margin-top: 8px;
+    }
+
+    .host-panel { margin-top: 28px; }
+    .pass-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .pass-form input {
+      flex: 1;
+      min-width: 160px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.2);
+      color: #fff;
+    }
+
+    .dist-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+    }
+    .dist-name { width: 140px; font-size: 13px; flex-shrink: 0; }
+    .dist-track {
+      flex: 1;
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+    .dist-fill { height: 100%; border-radius: 5px; }
+    .dist-count { width: 50px; text-align: right; font-size: 13px; color: var(--sub); }
+
+    .mini-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    .mini-table th, .mini-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      text-align: left;
+    }
+    .mini-table th { color: var(--sub); font-weight: 600; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(255,255,255,.15); }
+    .b-high { background: rgba(63,185,80,.15); color: var(--success); border-color: rgba(63,185,80,.3); }
+    .b-med  { background: rgba(188,140,255,.15); color: var(--mid); border-color: rgba(188,140,255,.3); }
+    .b-low  { background: rgba(248,81,73,.15); color: var(--danger); border-color: rgba(248,81,73,.3); }
+
+    .msg { padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+    .msg.ok { background: rgba(63,185,80,.12); color: var(--success); border: 1px solid rgba(63,185,80,.25); }
+    .msg.err { background: rgba(248,81,73,.12); color: var(--danger); border: 1px solid rgba(248,81,73,.25); }
+    .msg.info { background: rgba(88,166,255,.10); color: var(--info); border: 1px solid rgba(88,166,255,.25); }
+  </style>
 </head>
 <body>
 
@@ -24,193 +162,129 @@
       <a href="../hr-system/index.html">HR 体系</a>
       <a href="index.html" class="active">管理方格测评</a>
     </nav>
-    <a href="https://v.wjx.cn/vm/tIMiIab.aspx" target="_blank" class="btn btn-primary btn-sm">去问卷星作答 →</a>
   </div>
 </header>
 
 <section class="module-hero">
   <div class="module-hero-inner">
     <h1>管理方格 · 领导力风格情境测评</h1>
-    <p>基于布莱克（Robert Blake）与莫顿（Jane Mouton）的 Managerial Grid 理论。10 道情境题，双维度计分（关心生产 / 关心人），自动定位方格坐标与改善建议。支持在线自测、问卷星采集后批量 CSV 分析。</p>
+    <p>基于布莱克（Robert Blake）与莫顿（Jane Mouton）的 Managerial Grid 理论。10 道情境题，双维度计分（关心生产 / 关心人），自动定位方格坐标与改善建议。支持即时自测、会后复查与团队汇总三种模式。</p>
   </div>
 </section>
 
 <main class="module-body">
 
-  <div class="tabs">
-    <button class="tab active" data-target="panel-quiz">📝 在线自测</button>
-    <button class="tab" data-target="panel-csv">📊 问卷星 CSV 批量分析</button>
-    <button class="tab" data-target="panel-guide">📎 使用说明</button>
+  <div class="host-entry" id="hostEntry">
+    <button onclick="toggleHost()">🔒 主持人入口</button>
   </div>
 
-  <!-- 在线自测 -->
-  <div class="tab-panel active" id="panel-quiz">
+  <div id="msgBox"></div>
+
+  <!-- 模式切换 -->
+  <div class="mode-bar" id="modeBar">
+    <button class="mode-btn" data-mode="1" onclick="setMode('1')">
+      <span class="title">第 1 层 · 个人自测</span>
+      <span class="desc">零存储、零后端，答完即看结果</span>
+    </button>
+    <button class="mode-btn" data-mode="2" onclick="setMode('2')">
+      <span class="title">第 2 层 · 会后复查</span>
+      <span class="desc">提交后生成专属链接/二维码，可回头查</span>
+    </button>
+    <button class="mode-btn" data-mode="3" onclick="setMode('3')">
+      <span class="title">第 3 层 · 团队汇总</span>
+      <span class="desc">可选填姓名/部门，主持人看整体分布</span>
+    </button>
+  </div>
+
+  <!-- 通过 token 直接查看结果 -->
+  <section id="resultView" style="display:none"></section>
+
+  <!-- 答题区 -->
+  <section id="quizView">
     <div class="tool-card">
       <h3>作答指引</h3>
       <p>下面 10 个管理情境，每题选一个你「最可能」采取的方案（凭第一直觉，不是「应该」怎么做）。提交后自动算出你的生产导向 P 与人本导向 H 总分，换算成 1–9 的方格精确坐标，并匹配风格与改善建议。</p>
+      <div id="modeHint" class="mode-hint"></div>
+      <div class="identity-fields" id="identityFields" style="display:none">
+        <input type="text" id="uName" placeholder="姓名（可选，主持人汇总时显示）" maxlength="20">
+        <input type="text" id="uDept" placeholder="部门（可选）" maxlength="20">
+      </div>
     </div>
     <div id="quiz"></div>
     <div class="actions">
-      <button class="btn btn-primary" onclick="computeQuiz()">查看我的结果</button>
+      <button class="btn btn-primary" id="btnSubmit" onclick="submitQuiz()">查看我的结果</button>
       <button class="btn btn-outline" onclick="resetQuiz()">重做</button>
     </div>
+  </section>
 
-    <section id="quizResult" class="result-section">
-      <div class="tool-card">
-        <h3>你的测评结果</h3>
-        <div class="score-row">
-          <div class="score-box">
-            <div class="lab">生产导向 P 总分（满分 90）</div>
-            <div class="val" id="pVal">—</div>
-            <div class="progress"><i id="pBar" style="background:var(--danger);width:0%"></i></div>
-            <div style="margin-top:8px">档次<span class="badge" id="pTier">—</span></div>
-          </div>
-          <div class="score-box">
-            <div class="lab">人本导向 H 总分（满分 90）</div>
-            <div class="val" id="hVal">—</div>
-            <div class="progress"><i id="hBar" style="background:var(--info);width:0%"></i></div>
-            <div style="margin-top:8px">档次<span class="badge" id="hTier">—</span></div>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center;margin:20px 0">
-          <div id="svgWrap"></div>
-          <div>
-            <p style="font-size:22px;font-weight:800;margin:0" id="typeName">—</p>
-            <p class="tip" id="coordTxt">方格坐标：—</p>
-            <p class="tip" id="typeDesc" style="max-width:360px"></p>
-          </div>
-        </div>
-
-        <div class="advice-box">
-          <h4 id="adviceTitle">针对你偏弱维度的改善建议</h4>
-          <div id="adviceBody"></div>
-        </div>
-      </div>
-    </section>
-
-    <details style="margin-top:28px">
-      <summary style="cursor:pointer;color:var(--accent);font-weight:600">展开：15 种情境组合完整参考表</summary>
-      <p class="tip">理论上 P、H 各有高/中/低三档，共 9 种有效组合。系统会自动按你的实际 P/H 档次命中其中一行。</p>
-      <div class="table-wrap">
-        <table id="refTable"></table>
-      </div>
-    </details>
-  </div>
-
-  <!-- CSV 批量分析 -->
-  <div class="tab-panel" id="panel-csv">
+  <!-- 结果区 -->
+  <section id="quizResult" class="result-section" style="display:none">
     <div class="tool-card">
-      <h3>批量分析团队答卷</h3>
-      <p>把问卷星「下载数据 → CSV（文本形式）」拖入下方，即可自动识别 10 道题、给每人计分，并输出团队风格分布与明细/汇总 CSV。数据纯本地处理，不上传。</p>
-      <div class="dropzone" id="drop">
-        <p>把 <b>问卷星导出的 CSV</b> 拖到这里，或 <b>点击选择文件</b></p>
-        <p class="tip">支持标准导出；单选答案可以是 A–E 字母，也可以是选项标题全文。</p>
-        <input type="file" id="file" accept=".csv,.txt">
+      <h3>你的测评结果</h3>
+      <div class="score-row">
+        <div class="score-box">
+          <div class="lab">生产导向 P 总分（满分 90）</div>
+          <div class="val" id="pVal">—</div>
+          <div class="progress"><i id="pBar" style="background:var(--danger);width:0%"></i></div>
+          <div style="margin-top:8px">档次<span class="badge" id="pTier">—</span></div>
+        </div>
+        <div class="score-box">
+          <div class="lab">人本导向 H 总分（满分 90）</div>
+          <div class="val" id="hVal">—</div>
+          <div class="progress"><i id="hBar" style="background:var(--info);width:0%"></i></div>
+          <div style="margin-top:8px">档次<span class="badge" id="hTier">—</span></div>
+        </div>
       </div>
-      <div class="actions">
-        <button class="btn btn-outline" id="btnSample">载入示例 CSV 试一下</button>
-        <span class="tip" id="fileInfo"></span>
+
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center;margin:20px 0">
+        <div id="svgWrap"></div>
+        <div>
+          <p style="font-size:22px;font-weight:800;margin:0" id="typeName">—</p>
+          <p class="tip" id="coordTxt">方格坐标：—</p>
+          <p class="tip" id="typeDesc" style="max-width:360px"></p>
+        </div>
       </div>
-      <div id="msg" class="tip" style="margin-top:10px"></div>
+
+      <div class="advice-box">
+        <h4 id="adviceTitle">针对你偏弱维度的改善建议</h4>
+        <div id="adviceBody"></div>
+      </div>
     </div>
+  </section>
 
-    <section id="csvResult" style="display:none">
-      <div class="tool-card">
-        <h3>团队汇总</h3>
-        <div class="score-row" id="statCards"></div>
-        <div id="distBox"></div>
-        <div class="actions">
-          <button class="btn btn-primary" id="btnDetail">导出明细 CSV</button>
-          <button class="btn btn-outline" id="btnSummary">导出汇总 CSV</button>
-        </div>
+  <!-- 专属结果二维码/链接 -->
+  <section id="tokenShare" style="display:none">
+    <div class="tool-card">
+      <h3>你的专属结果页</h3>
+      <p class="tip">截图保存下方二维码，或复制链接。会后扫码/点击即可回看本次测评结果，无需登录。</p>
+      <div class="qr-wrap" id="qrWrap"></div>
+      <div style="text-align:center">
+        <a id="shareLink" class="share-link" href="#" target="_blank"></a>
       </div>
+    </div>
+  </section>
 
-      <div class="tool-card">
-        <h3>逐人结果（共 <span id="cnt">0</span> 份）<span id="wechatTag" class="tip" style="margin-left:10px;display:none">已识别微信信息列</span></h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>#</th><th id="thWechat">填写者</th><th>答题时间</th><th>P</th><th>H</th><th>坐标(P,H)</th>
-              <th>P档</th><th>H档</th><th>风格</th><th>状态</th><th>改善建议</th>
-            </tr></thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
+  <!-- 主持人汇总面板 -->
+  <section id="hostPanel" class="host-panel" style="display:none">
+    <div class="tool-card">
+      <h3>主持人汇总</h3>
+      <div class="pass-form" id="passForm">
+        <input type="password" id="passcode" placeholder="输入主持人口令">
+        <button class="btn btn-primary" onclick="loadHost()">查看汇总</button>
       </div>
-    </section>
-  </div>
+      <div id="hostBody"></div>
+    </div>
+  </section>
 
   <!-- 使用说明 -->
-  <div class="tab-panel" id="panel-guide">
-    <div class="tool-card">
-      <h3>三种使用方式</h3>
-      <ol>
-        <li><b>在线自测</b>：在当前页「在线自测」标签直接勾选 10 题，立即看个人结果。</li>
-        <li><b>问卷星采集 + 批量分析</b>：把团队成员填写问卷星后的答卷导出 CSV，拖入下方「CSV 分析器」出团队报告。</li>
-        <li><b>编辑/查看原始数据</b>：登录问卷星编辑问卷，修改题目或查看实时统计。</li>
-      </ol>
-    </div>
-
-    <div class="tool-card">
-      <h3>❓ 填完问卷星的人能看到自己的分析结果吗？</h3>
-      <p><b>目前不能直接看到。</b>问卷星提交后默认只显示「提交成功」感谢页，不会自动弹出管理方格坐标和改善建议。</p>
-      <p>推荐三种解决方案：</p>
-      <ol>
-        <li><b>最省事</b>：让填写者先在本页「在线自测」做一遍，提交后直接看结果（与问卷星题目一致）。</li>
-        <li><b>管理员分发</b>：在问卷星里加一道「姓名/部门」题，导出 CSV 后用本页「CSV 批量分析」算分，再把每个人的报告单独发过去。</li>
-        <li><b>自动推送（进阶）</b>：开通问卷星「数据推送」把每份答卷实时推送到本机代理，自动算分后发邮件/企业微信给填写者（需额外部署与消息通道）。</li>
-      </ol>
-    </div>
-
-    <div class="tool-card import-box">
-      <h4>一键导入到问卷星</h4>
-      <p>点击下方按钮，即可用当前题目在当前账号创建一份新问卷并发布。Key 只发给本地代理，不会上传到其他地方。</p>
-      <div class="import-row">
-        <input type="password" id="wjxKey" placeholder="问卷星 ApiKey，留空则使用默认">
-        <button class="btn btn-primary" onclick="oneKeyImport()">🚀 一键创建并发布问卷</button>
-      </div>
-      <div id="importResult" style="display:none"></div>
-    </div>
-
-    <div class="tool-card">
-      <h3>如何开启「获取微信用户信息」</h3>
-      <p>API 创建问卷时<b>不能自动开启</b>微信授权，必须登录问卷星后台手动设置：</p>
-      <ol>
-        <li>进入问卷 → 顶部「设置」→「填写限制」。</li>
-        <li>勾选「<b>获取微信用户信息</b>」。</li>
-        <li>选择「获取微信用户的昵称 & OPENID（需登录）」。</li>
-        <li>收集方式选「<b>必须登录才能填写</b>」。</li>
-        <li>授权方式选「<b>通过问卷星官方微信认证服务号来收集</b>」（无需自己绑定服务号）。</li>
-        <li>保存后重新发布。导出 CSV 时就会出现「微信昵称」「微信OpenID」「微信头像」等列，分析器会自动识别并在逐人结果中显示。</li>
-      </ol>
-      <p class="tip">已创建的问卷，可直接在编辑页打开「设置」开启；不需要重新导入。</p>
-    </div>
-
-    <div class="tool-card">
-      <h3>CSV 批量分析入口</h3>
-      <p>把问卷星下载的 CSV 拖入分析器，自动给团队每个人计分并出报告。</p>
-      <div class="file-card" onclick="switchTab('panel-csv')">
-        <div class="icon">&lt;/&gt;</div>
-        <div class="meta">
-          <div class="name">grid-csv-analyzer.html</div>
-          <div class="desc">问卷星导出 CSV → 团队管理方格报告</div>
-        </div>
-        <div class="actions">
-          <span class="ic">🌐</span>
-          <span class="ic">↗</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="tool-card">
-      <h3>问卷星导出 CSV 步骤</h3>
-      <ol>
-        <li>登录问卷星 → 打开「管理方格 · 领导力风格情境测评」。</li>
-        <li>「分析 & 下载」→「下载数据」。</li>
-        <li>格式选 <b>CSV（以文本形式）</b>，编码 UTF-8，下载后拖入本页「CSV 批量分析」即可。</li>
-      </ol>
-    </div>
+  <div class="tool-card" style="margin-top:32px">
+    <h3>三种使用模式</h3>
+    <ol>
+      <li><b>第 1 层 · 个人自测（默认）</b>：在当前页直接勾选 10 题，浏览器本地算分，立即看结果。不存储、不上传，最适合快速自测。</li>
+      <li><b>第 2 层 · 会后复查</b>：选择「会后复查」模式答题，提交后由后台保存结果并生成一个专属 token 链接/二维码。你可以截图保存，活动结束后随时回看。</li>
+      <li><b>第 3 层 · 团队汇总</b>：选择「团队汇总」模式，答题时可自愿填写姓名/部门；主持人点击右上角「主持人入口」输入口令，即可查看团队风格分布与平均 P/H，会上投屏讨论。</li>
+    </ol>
+    <p class="tip">主持人用法：把「团队汇总」模式的答题页链接做成二维码投在会场（或发群里），大家答完后各自看结果，你打开主持人入口看整体分布，引导讨论「团队偏哪种风格」。</p>
   </div>
 
 </main>
@@ -220,11 +294,81 @@
 </footer>
 
 <script src="../../assets/js/grid-core.js"></script>
+<script src="../../assets/js/qrcode.js"></script>
 <script src="../../assets/js/app.js"></script>
 <script>
-initTabs();
+/* ---------- 状态 ---------- */
+const params = new URLSearchParams(location.search);
+let MODE = params.get('mode') || '1';
+let SAVED_TOKEN = '';
 
-/* ---------- 在线自测 ---------- */
+const MODES = {
+  '1': {
+    title: '第 1 层 · 个人自测',
+    hint: '当前为「个人自测」模式：答案仅在浏览器内计算，不保存、不上传，刷新后结果消失。',
+    needsBackend: false
+  },
+  '2': {
+    title: '第 2 层 · 会后复查',
+    hint: '当前为「会后复查」模式：提交后系统会保存结果并给你一个专属链接/二维码，可截图保存以便会后回看。',
+    needsBackend: true
+  },
+  '3': {
+    title: '第 3 层 · 团队汇总',
+    hint: '当前为「团队汇总」模式：答题时可自愿填写姓名/部门；主持人可通过「主持人入口」查看团队整体分布。',
+    needsBackend: true
+  }
+};
+
+/* ---------- 初始化 ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  renderModeBar();
+  applyModeUI();
+  renderQuiz();
+  renderRef();
+
+  // 如果有 token，直接展示结果
+  const token = params.get('token');
+  if (token) {
+    loadResultByToken(token);
+  }
+});
+
+function renderModeBar() {
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === MODE);
+  });
+}
+
+function setMode(m) {
+  MODE = m;
+  const url = new URL(location.href);
+  url.searchParams.set('mode', m);
+  url.searchParams.delete('token');
+  history.replaceState({}, '', url);
+  renderModeBar();
+  applyModeUI();
+  resetQuiz();
+  document.getElementById('resultView').style.display = 'none';
+  document.getElementById('quizView').style.display = 'block';
+}
+
+function applyModeUI() {
+  const cfg = MODES[MODE] || MODES['1'];
+  document.getElementById('modeHint').textContent = cfg.hint;
+  document.getElementById('identityFields').style.display = (MODE === '3') ? 'grid' : 'none';
+  document.getElementById('btnSubmit').textContent = cfg.needsBackend ? '提交并查看结果' : '查看我的结果';
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById('msgBox');
+  el.innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+function clearMsg() {
+  document.getElementById('msgBox').innerHTML = '';
+}
+
+/* ---------- 答题渲染 ---------- */
 function optionTag(o) {
   const p = o.p, h = o.h;
   if (p >= 7 && h >= 7) return '9,9';
@@ -236,6 +380,7 @@ function optionTag(o) {
 
 function renderQuiz() {
   const qz = document.getElementById('quiz');
+  qz.innerHTML = '';
   GridCore.QUESTIONS.forEach((q, i) => {
     const card = document.createElement('div'); card.className = 'quiz-card';
     const title = document.createElement('div');
@@ -252,6 +397,70 @@ function renderQuiz() {
     });
     qz.appendChild(card);
   });
+}
+
+/* ---------- 提交 ---------- */
+async function submitQuiz() {
+  clearMsg();
+  const answers = [];
+  for (let i = 0; i < GridCore.QUESTIONS.length; i++) {
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if (!sel) { alert('请先完成全部 10 道题（第 ' + (i+1) + ' 题未选）'); return; }
+    answers.push(+sel.value);
+  }
+
+  if (MODE === '1') {
+    const ans = {};
+    GridCore.QUESTIONS.forEach((q, i) => ans[i] = q.options[answers[i]].text);
+    renderResult(GridCore.scoreAnswers(ans));
+    return;
+  }
+
+  // mode 2/3 走后端
+  const payload = { answers };
+  if (MODE === '3') {
+    payload.name = document.getElementById('uName').value.trim() || null;
+    payload.dept = document.getElementById('uDept').value.trim() || null;
+  }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.textContent = '提交中…';
+  try {
+    const r = await fetch('/api/quiz/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (!r.ok || data.error) throw new Error(data.error || '提交失败');
+    SAVED_TOKEN = data.token;
+    renderResult(data.result);
+    showTokenShare(data.token);
+  } catch (e) {
+    showMsg('提交失败：' + e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = MODE === '3' ? '提交并查看结果' : '提交并查看结果';
+  }
+}
+
+/* ---------- 结果展示 ---------- */
+function renderResult(s) {
+  document.getElementById('pVal').textContent = s.P;
+  document.getElementById('hVal').textContent = s.H;
+  document.getElementById('pBar').style.width = (s.P/90*100) + '%';
+  document.getElementById('hBar').style.width = (s.H/90*100) + '%';
+  const pB = document.getElementById('pTier'); pB.className = 'badge b-' + s.pt; pB.textContent = GridCore.tierLabel(s.pt);
+  const hB = document.getElementById('hTier'); hB.className = 'badge b-' + s.ht; hB.textContent = GridCore.tierLabel(s.ht);
+
+  document.getElementById('typeName').textContent = s.type;
+  document.getElementById('coordTxt').textContent = `方格坐标：( ${s.pc.toFixed(1)}, ${s.hc.toFixed(1)} )`;
+  document.getElementById('typeDesc').textContent = s.desc;
+  renderGrid(s.pc, s.hc);
+  document.getElementById('adviceTitle').textContent = '针对你偏弱维度的改善建议 · ' + s.weak;
+  document.getElementById('adviceBody').innerHTML = '<ol>' + s.advice.map(a => `<li>${a}</li>`).join('') + '</ol>';
+
+  document.getElementById('quizResult').style.display = 'block';
+  document.getElementById('quizResult').scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderGrid(pc, hc) {
@@ -276,36 +485,14 @@ function renderGrid(pc, hc) {
   document.getElementById('svgWrap').innerHTML = `<svg width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" style="background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:10px">${g}</svg>`;
 }
 
-function computeQuiz() {
-  const answers = {};
-  for (let i = 0; i < GridCore.QUESTIONS.length; i++) {
-    const sel = document.querySelector(`input[name="q${i}"]:checked`);
-    if (!sel) { alert('请先完成全部 10 道题（第 ' + (i+1) + ' 题未选）'); return; }
-    answers[i] = GridCore.QUESTIONS[i].options[+sel.value].text;
-  }
-  const s = GridCore.scoreAnswers(answers);
-  document.getElementById('pVal').textContent = s.P;
-  document.getElementById('hVal').textContent = s.H;
-  document.getElementById('pBar').style.width = (s.P/90*100) + '%';
-  document.getElementById('hBar').style.width = (s.H/90*100) + '%';
-  const pB = document.getElementById('pTier'); pB.className = 'badge b-' + s.pt; pB.textContent = GridCore.tierLabel(s.pt);
-  const hB = document.getElementById('hTier'); hB.className = 'badge b-' + s.ht; hB.textContent = GridCore.tierLabel(s.ht);
-
-  document.getElementById('typeName').textContent = s.type;
-  document.getElementById('coordTxt').textContent = `方格坐标：( ${s.pc.toFixed(1)}, ${s.hc.toFixed(1)} )`;
-  document.getElementById('typeDesc').textContent = s.desc;
-  renderGrid(s.pc, s.hc);
-  document.getElementById('adviceTitle').textContent = '针对你偏弱维度的改善建议 · ' + s.weak;
-  document.getElementById('adviceBody').innerHTML = '<ol>' + s.advice.map(a => `<li>${a}</li>`).join('') + '</ol>';
-
-  document.getElementById('quizResult').style.display = 'block';
-  document.getElementById('quizResult').scrollIntoView({ behavior: 'smooth' });
-}
-
 function resetQuiz() {
-  document.querySelectorAll('#panel-quiz input[type=radio]').forEach(r => r.checked = false);
-  document.querySelectorAll('#panel-quiz .opt').forEach(x => x.classList.remove('sel'));
+  document.querySelectorAll('#quizView input[type=radio]').forEach(r => r.checked = false);
+  document.querySelectorAll('#quizView .opt').forEach(x => x.classList.remove('sel'));
   document.getElementById('quizResult').style.display = 'none';
+  document.getElementById('tokenShare').style.display = 'none';
+  document.getElementById('uName').value = '';
+  document.getElementById('uDept').value = '';
+  clearMsg();
 }
 
 function renderRef() {
@@ -326,187 +513,153 @@ function renderRef() {
     const hc = r[2] === '高' ? '<span class="t-high">高</span>' : r[2] === '中' ? '<span class="t-med">中</span>' : '<span class="t-low">低</span>';
     h += `<tr><td>${r[0]}</td><td>${pc}</td><td>${hc}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td></tr>`;
   });
-  document.getElementById('refTable').innerHTML = h;
+  // 将参考表插入到答题区后面
+  const ref = document.createElement('details');
+  ref.style.marginTop = '28px';
+  ref.innerHTML = `<summary style="cursor:pointer;color:var(--accent);font-weight:600">展开：9 种情境组合完整参考表</summary>
+    <p class="tip">理论上 P、H 各有高/中/低三档，共 9 种有效组合。系统会自动按你的实际 P/H 档次命中其中一行。</p>
+    <div class="table-wrap"><table>${h}</table></div>`;
+  document.getElementById('quizView').appendChild(ref);
 }
 
-renderQuiz();
-renderRef();
-
-/* ---------- CSV 批量分析 ---------- */
-const drop = document.getElementById('drop'), fileInput = document.getElementById('file');
-drop.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
-['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.style.borderColor = 'var(--accent)'; drop.style.color = '#fff'; }));
-['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.style.borderColor = 'rgba(255,255,255,.18)'; drop.style.color = 'var(--sub)'; }));
-drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
-
-function setMsg(t, err) { document.getElementById('msg').innerHTML = err ? `<span style="color:var(--danger)">${t}</span>` : `<span style="color:var(--success)">${t}</span>`; }
-
-let LAST = null;
-function handleFile(file) {
-  document.getElementById('fileInfo').textContent = '已选择：' + file.name + '（' + (file.size/1024).toFixed(1) + ' KB）';
-  readFileText(file).then(runAnalyze).catch(e => setMsg('读取失败：' + e.message, true));
+/* ---------- 专属链接/二维码 ---------- */
+function showTokenShare(token) {
+  if (MODE === '1') return;
+  const link = location.origin + location.pathname + '?token=' + token;
+  document.getElementById('shareLink').href = link;
+  document.getElementById('shareLink').textContent = link;
+  makeQR(link, document.getElementById('qrWrap'));
+  document.getElementById('tokenShare').style.display = 'block';
 }
 
-function runAnalyze(text) {
-  const res = GridCore.scoreCSV(text);
-  if (res.error) { setMsg('解析失败：' + res.error, true); return; }
-  if (res.matched < res.total) {
-    setMsg(`⚠ 只匹配到 ${res.matched}/${res.total} 道题，请确认是该测评的导出。`, true);
-  } else {
-    setMsg(`✔ 已识别 ${res.matched} 道题、共 ${res.rows.length} 份答卷。`, false);
+function makeQR(text, container) {
+  container.innerHTML = '';
+  if (typeof qrcode !== 'function') {
+    container.textContent = '二维码库未加载';
+    return;
   }
-  LAST = res;
-  renderCSV(res);
+  const qr = qrcode(0, 'M');
+  qr.addData(text);
+  qr.make();
+  const url = qr.createDataURL(6, 10);
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = '二维码';
+  container.appendChild(img);
 }
 
-function tierBadge(t) { return `<span class="badge b-${t}">${GridCore.tierLabel(t)}</span>`; }
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function styleColor(name) {
-  if (name.includes('9,9')) return 'var(--success)';
-  if (name.includes('9,1')) return 'var(--danger)';
-  if (name.includes('1,9')) return 'var(--info)';
-  if (name.includes('5,5')) return 'var(--mid)';
-  if (name.includes('1,1')) return 'var(--poor)';
-  return 'var(--accent)';
-}
-
-function renderCSV(res) {
-  const agg = GridCore.aggregate(res);
-  document.getElementById('statCards').innerHTML = `
-    <div class="score-box"><div class="lab">有效答卷</div><div class="val">${agg.valid}<span style="font-size:14px;color:var(--sub)"> / ${agg.total}</span></div></div>
-    <div class="score-box"><div class="lab">平均 生产导向 P</div><div class="val">${agg.avgP}</div></div>
-    <div class="score-box"><div class="lab">平均 人本导向 H</div><div class="val">${agg.avgH}</div></div>
-    <div class="score-box"><div class="lab">最集中风格</div><div style="font-size:18px;font-weight:800">${agg.topType}</div><div class="tip">${agg.topCount} 人</div></div>`;
-
-  const entries = Object.entries(agg.dist).sort((a,b) => b[1] - a[1]);
-  const max = Math.max(...entries.map(e => e[1]), 1);
-  document.getElementById('distBox').innerHTML = entries.map(([k,v]) => `
-    <div style="display:flex;align-items:center;gap:10px;margin:7px 0">
-      <div style="width:150px;font-size:13px;flex:0 0 auto">${k}</div>
-      <div class="progress" style="flex:1"><i style="width:${v/max*100}%;background:${styleColor(k)}"></i></div>
-      <div style="width:46px;text-align:right;font-size:13px;color:var(--sub)">${v} 人</div>
-    </div>`).join('');
-
-  document.getElementById('cnt').textContent = res.rows.length;
-  const hasWechat = res.wechatCols && res.wechatCols.has;
-  document.getElementById('wechatTag').style.display = hasWechat ? 'inline' : 'none';
-  document.getElementById('thWechat').textContent = hasWechat ? '填写者（微信）' : '填写者';
-  document.getElementById('tbody').innerHTML = res.rows.map((r, i) => {
-    const s = r.score;
-    const adv = s.complete ? s.advice.map(a => `<li>${a}</li>`).join('') : `<span style="color:var(--danger)">缺 ${s.missing} 题，未计分</span>`;
-    let wechatCell = '—';
-    if (hasWechat) {
-      const wc = r.wechat || {};
-      const name = wc.name ? escapeHtml(wc.name) : (wc.openid ? '微信用户' : '—');
-      const avatar = wc.avatar ? `<img src="${escapeHtml(wc.avatar)}" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;object-fit:cover">` : '';
-      const tip = wc.openid ? `<span class="tip" title="OpenID: ${escapeHtml(wc.openid)}">(微信)</span>` : '';
-      wechatCell = `<div style="display:flex;align-items:center;gap:4px">${avatar}<span>${name}</span>${tip}</div>`;
-    }
-    return `<tr>
-      <td>${i+1}</td>
-      <td>${wechatCell}</td>
-      <td>${r.meta['开始答题时间'] || '—'}</td>
-      <td>${s.P}</td><td>${s.H}</td>
-      <td style="color:var(--sub)">(${s.pc.toFixed(1)}, ${s.hc.toFixed(1)})</td>
-      <td>${tierBadge(s.pt)}</td><td>${tierBadge(s.ht)}</td>
-      <td>${s.type}</td>
-      <td>${s.complete ? '<span style="color:var(--success)">✔ 完整</span>' : '<span style="color:var(--danger)">不完整</span>'}</td>
-      <td><ul style="margin:0;padding-left:18px">${adv}</ul></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('csvResult').style.display = 'block';
-}
-
-function makeSampleCSV() {
-  const profiles = [
-    [4,4,4,4,4,4,4,4,4,4],[1,1,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,0],
-    [3,3,3,3,3,3,3,3,3,3],[4,1,4,1,4,1,4,1,4,1],[0,1,0,1,0,1,0,1,0,1],
-    [4,4,1,1,4,4,1,1,4,4],[2,2,2,2,2,2,2,2,2,2],[3,4,3,4,3,4,3,4,3,4],[1,4,1,4,1,4,1,4,1,4]
-  ];
-  const nicknames = ['阿明','小北','陈晨','大卫','艾琳','方方','郭郭','华华','娟娟','凯凯'];
-  const H = ['开始答题时间','答题时长(秒)','来源','序号'];
-  GridCore.QUESTIONS.forEach((q,i) => H.push((i+1)+'. '+q.q));
-  H.push('微信昵称','微信OpenID','微信头像','来源详情','浏览器','操作系统','城市');
-  const rows = [H];
-  profiles.forEach((p, idx) => {
-    const t = new Date(Date.UTC(2026,7,4,1,0,0) + idx*37*60000).toISOString().replace('T',' ').replace('Z','');
-    const nick = nicknames[idx];
-    const openid = 'oabc' + String(idx).padStart(4,'0') + 'def';
-    const avatar = 'https://placehold.co/64/3b82f6/ffffff?text=' + encodeURIComponent(nick);
-    const line = [t, String(120+idx*17), '微信', String(idx+1)];
-    GridCore.QUESTIONS.forEach((q,i) => line.push(q.options[p[i]].text));
-    line.push(nick, openid, avatar, '微信公众号', 'Chrome','Windows 10','大同');
-    rows.push(line);
-  });
-  return rows.map(r => r.map(c => { const s=String(c); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }).join(',')).join('\n');
-}
-
-document.getElementById('btnSample').addEventListener('click', () => {
-  runAnalyze(makeSampleCSV());
-  setMsg('✔ 已载入内置示例（10 份虚拟答卷）。', false);
-});
-
-document.getElementById('btnDetail').addEventListener('click', () => {
-  if (!LAST) return;
-  const hasWechat = LAST.wechatCols && LAST.wechatCols.has;
-  const head = ['序号'];
-  if (hasWechat) head.push('微信昵称','微信OpenID','微信头像');
-  head.push('答题时间','P总分','H总分','坐标P','坐标H','P档','H档','风格','完整','偏弱维度','改善建议');
-  const lines = [head];
-  LAST.rows.forEach((r, i) => {
-    const s = r.score;
-    const adv = s.complete ? s.advice.join('；') : '未计分(缺' + s.missing + '题)';
-    const row = [i+1];
-    if (hasWechat) { const w = r.wechat || {}; row.push(w.name||'', w.openid||'', w.avatar||''); }
-    row.push(r.meta['开始答题时间']||'', s.P, s.H, s.pc.toFixed(1), s.hc.toFixed(1),
-      GridCore.tierLabel(s.pt), GridCore.tierLabel(s.ht), s.type, s.complete?'完整':'不完整', s.weak, adv);
-    lines.push(row);
-  });
-  downloadCSV('管理方格_逐人明细.csv', lines);
-});
-
-document.getElementById('btnSummary').addEventListener('click', () => {
-  if (!LAST) return;
-  const agg = GridCore.aggregate(LAST);
-  const lines = [['指标','值'],['总答卷',agg.total],['有效答卷',agg.valid],['平均P',agg.avgP],['平均H',agg.avgH],['最集中风格',agg.topType],['最集中人数',agg.topCount]];
-  lines.push([]);
-  lines.push(['风格','人数']);
-  Object.entries(agg.dist).sort((a,b)=>b[1]-a[1]).forEach(([k,v]) => lines.push([k,v]));
-  downloadCSV('管理方格_团队汇总.csv', lines);
-});
-
-/* ---------- 一键导入问卷星 ---------- */
-async function oneKeyImport() {
-  const btn = document.querySelector('.import-box button');
-  const resEl = document.getElementById('importResult');
-  const keyInput = document.getElementById('wjxKey');
-  const headers = { 'Content-Type': 'text/plain; charset=utf-8' };
-  if (keyInput.value.trim()) headers['X-WJX-Key'] = keyInput.value.trim();
-
-  btn.disabled = true; btn.textContent = '创建中…';
-  resEl.style.display = 'none'; resEl.className = '';
-
+/* ---------- 通过 token 加载结果 ---------- */
+async function loadResultByToken(token) {
+  document.getElementById('quizView').style.display = 'none';
+  document.getElementById('modeBar').style.display = 'none';
+  document.getElementById('hostEntry').style.display = 'none';
+  const rv = document.getElementById('resultView');
+  rv.style.display = 'block';
+  rv.innerHTML = '<div class="tool-card"><p>正在加载结果…</p></div>';
   try {
-    const jsonl = GridCore.buildWjxJsonl();
-    const r = await fetch('/api/create-survey', { method: 'POST', headers, body: jsonl });
+    const r = await fetch('/api/quiz/result?token=' + encodeURIComponent(token));
     const data = await r.json();
-    if (!r.ok || data.error) throw new Error(data.error || '请求失败');
-
-    resEl.className = 'import-result';
-    resEl.innerHTML = `<b>✔ 已创建并发布</b><br>
-      问卷 ID：<code>${data.vid}</code><br>
-      填写链接：<a href="${data.link}" target="_blank">${data.link}</a><br>
-      编辑链接：<a href="${data.editLink}" target="_blank">${data.editLink}</a>`;
+    if (!r.ok || data.error) throw new Error(data.error || '结果不存在');
+    rv.innerHTML = `
+      <div class="tool-card">
+        <h3>测评结果${data.name ? ' · ' + escapeHtml(data.name) : ''}</h3>
+        <p class="tip">${data.dept ? '部门：' + escapeHtml(data.dept) + ' · ' : ''}提交时间：${data.created_at || '—'}</p>
+      </div>`;
+    // 借用 quizResult 容器展示
+    document.getElementById('quizResult').style.display = 'block';
+    renderResult(data);
+    showTokenShare(token);
   } catch (e) {
-    resEl.className = 'import-result error';
-    resEl.innerHTML = `<b>创建失败</b>：${e.message}<br>
-      <span class="tip">可能原因：① 未启动本地代理服务（node proxy-server.js）；② ApiKey 无效或权限不足；③ 网络问题。</span>`;
-  } finally {
-    btn.disabled = false; btn.textContent = '🚀 一键创建并发布问卷';
-    resEl.style.display = 'block';
+    rv.innerHTML = `<div class="tool-card"><div class="msg err">加载结果失败：${escapeHtml(e.message)}</div></div>`;
   }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- 主持人入口 ---------- */
+function toggleHost() {
+  const p = document.getElementById('hostPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+async function loadHost() {
+  const pc = document.getElementById('passcode').value.trim();
+  if (!pc) { showMsg('请输入口令', 'err'); return; }
+  const body = document.getElementById('hostBody');
+  body.innerHTML = '<p class="tip">加载中…</p>';
+  try {
+    const r = await fetch('/api/quiz/host?passcode=' + encodeURIComponent(pc));
+    const data = await r.json();
+    if (!r.ok || data.error) throw new Error(data.error || '汇总失败');
+    renderHost(data, body);
+    showMsg('汇总已加载', 'ok');
+  } catch (e) {
+    body.innerHTML = '';
+    showMsg('汇总失败：' + e.message, 'err');
+  }
+}
+
+function renderHost(data, container) {
+  const entries = Object.entries(data.dist).sort((a,b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(e => e[1]), 1);
+  const styleColor = name => {
+    if (name.includes('9,9')) return 'var(--success)';
+    if (name.includes('9,1')) return 'var(--danger)';
+    if (name.includes('1,9')) return 'var(--info)';
+    if (name.includes('5,5')) return 'var(--mid)';
+    if (name.includes('1,1')) return 'var(--poor)';
+    return 'var(--accent)';
+  };
+  const distHtml = entries.length ? entries.map(([k,v]) => `
+    <div class="dist-bar">
+      <div class="dist-name">${k}</div>
+      <div class="dist-track"><div class="dist-fill" style="width:${v/max*100}%;background:${styleColor(k)}"></div></div>
+      <div class="dist-count">${v} 人</div>
+    </div>`).join('') : '<p class="tip">暂无数据</p>';
+
+  const rowsHtml = (data.rows || []).map((r,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name ? escapeHtml(r.name) : '—'}${r.dept ? '<span class="tip"> · ' + escapeHtml(r.dept) + '</span>' : ''}</td>
+      <td>${r.dept ? escapeHtml(r.dept) : '—'}</td>
+      <td>${r.P}</td><td>${r.H}</td>
+      <td>(${r.pc.toFixed(1)}, ${r.hc.toFixed(1)})</td>
+      <td>${r.type}</td>
+    </tr>`).join('');
+
+  container.innerHTML = `
+    <div class="score-row">
+      <div class="score-box"><div class="lab">有效答卷</div><div class="val">${data.total}</div></div>
+      <div class="score-box"><div class="lab">平均 生产导向 P</div><div class="val">${data.avgP}</div></div>
+      <div class="score-box"><div class="lab">平均 人本导向 H</div><div class="val">${data.avgH}</div></div>
+    </div>
+    <h4 style="margin-top:20px">风格分布</h4>
+    ${distHtml}
+    <h4 style="margin-top:24px">逐人明细</h4>
+    <div class="table-wrap">
+      <table class="mini-table">
+        <thead><tr><th>#</th><th>姓名</th><th>部门</th><th>P</th><th>H</th><th>坐标</th><th>风格</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+    <div class="actions" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="downloadHostCSV()">导出汇总 CSV</button>
+    </div>
+  `;
+  window._hostData = data;
+}
+
+function downloadHostCSV() {
+  const data = window._hostData;
+  if (!data) return;
+  const lines = [['指标','值'],['总答卷',data.total],['平均P',data.avgP],['平均H',data.avgH]];
+  lines.push([]); lines.push(['风格','人数']);
+  Object.entries(data.dist).sort((a,b)=>b[1]-a[1]).forEach(([k,v]) => lines.push([k,v]));
+  lines.push([]); lines.push(['姓名','部门','P','H','坐标P','坐标H','风格']);
+  data.rows.forEach(r => lines.push([r.name||'', r.dept||'', r.P, r.H, r.pc.toFixed(1), r.hc.toFixed(1), r.type]));
+  downloadCSV('管理方格_团队汇总.csv', lines);
 }
 </script>
 
