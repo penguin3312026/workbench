@@ -183,8 +183,12 @@
     } else if (mod.type === 'iframe') {
       openFrame(mod.url, mod.title);
     } else {
-      // static
-      openFrame('/modules/' + mod.path, mod.title);
+      // static: prefer path (relative to modules/), fallback to url
+      let src = mod.url;
+      if (mod.path) {
+        src = '/modules/' + mod.path;
+      }
+      openFrame(src || 'about:blank', mod.title);
     }
   }
 
