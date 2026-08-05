@@ -107,12 +107,14 @@ def quiz_submit():
         answers = payload.get("answers")
         if not isinstance(answers, list) or len(answers) != 10:
             return jsonify({"error": "需要 10 道题的答案"}), 400
+        name = (payload.get("name") or "").strip()
+        if not name:
+            return jsonify({"error": "姓名为必填项"}), 400
         result = score_by_indices(answers)
     except Exception as e:
         return jsonify({"error": "答卷格式错误: " + str(e)}), 400
 
     token = uuid.uuid4().hex
-    name = (payload.get("name") or "").strip() or None
     dept = (payload.get("dept") or "").strip() or None
     conn = get_db()
     conn.execute(
