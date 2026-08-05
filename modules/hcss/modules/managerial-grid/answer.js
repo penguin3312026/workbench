@@ -49,6 +49,14 @@ function renderQuiz() {
 }
 
 async function submitQuiz() {
+  const nameEl = document.getElementById('participantName');
+  const name = (nameEl.value || '').trim();
+  if (!name) {
+    showMsg('请先填写姓名（必填项）后再提交', 'err');
+    nameEl.focus();
+    nameEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
   const answers = [];
   for (let i = 0; i < GridCore.QUESTIONS.length; i++) {
     const sel = document.querySelector(`input[name="q${i}"]:checked`);
@@ -61,7 +69,7 @@ async function submitQuiz() {
     const r = await fetch('/api/quiz/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers })
+      body: JSON.stringify({ answers, name })
     });
     const data = await r.json();
     if (!r.ok || data.error) throw new Error(data.error || '提交失败');
