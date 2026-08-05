@@ -38,6 +38,11 @@
       padding: 16px 18px;
       margin-bottom: 14px;
     }
+    .host-banner {
+      background: rgba(212,168,75,.10); border: 1px solid var(--hc-gold);
+      color: var(--hc-gold-light); border-radius: 10px; padding: 12px 14px;
+      font-size: 14px; font-weight: 600; margin-bottom: 14px; line-height: 1.5;
+    }
     .quiz-col .qhead { margin-bottom: 10px; }
     .quiz-col .qnum {
       display: inline-block; background: var(--accent); color: var(--hc-navy);
@@ -132,6 +137,7 @@
   <!-- 左：可投屏的 10 道题 -->
   <div class="quiz-col">
     <div id="liveMsg"></div>
+    <div class="host-banner">📺 本区域仅用于<b>大屏投屏展示题目</b>，不可在此作答。请让参会者扫右侧二维码，在手机上填写姓名并答题。</div>
     <div id="quizScreen"></div>
   </div>
 
