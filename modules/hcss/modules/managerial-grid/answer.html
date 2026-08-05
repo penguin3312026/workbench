@@ -6,26 +6,40 @@
   <title>管理方格测评 · 答题</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <style>
-    body { padding-bottom: 80px; }
+    /* 深色大屏主题：body 直接定为深蓝，所有文字默认白色，杜绝「深底深字」看不见 */
+    body { background: var(--hc-navy); color: var(--hc-white); padding-bottom: 92px; }
     .ans-wrap { max-width: 640px; margin: 0 auto; padding: 14px 14px 0; }
     .ans-head { text-align: center; padding: 10px 0 6px; }
     .ans-head h2 { margin: 0; font-size: 19px; color: var(--hc-gold); }
     .ans-head p { margin: 4px 0 0; font-size: 12px; color: var(--sub); }
 
+    /* 姓名必填输入框（深色卡片 + 白字） */
+    .name-box { background: var(--panel); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 14px; margin: 12px 0 14px; }
+    .name-box label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; color: var(--hc-white); }
+    .name-box .req { color: var(--danger); margin-left: 2px; }
+    .name-box input {
+      width: 100%; padding: 12px 13px; border-radius: 9px;
+      border: 1px solid rgba(255,255,255,.15); background: rgba(0,0,0,.28);
+      color: var(--hc-white); font-size: 15px; box-sizing: border-box;
+    }
+    .name-box input::placeholder { color: var(--sub); }
+    .name-box input:focus { outline: none; border-color: var(--hc-gold); box-shadow: 0 0 0 2px rgba(212,168,75,.25); }
+
     .quiz-card {
-      background: var(--panel); border: 1px solid rgba(255,255,255,.08);
+      background: var(--panel); border: 1px solid rgba(255,255,255,.08); color: var(--hc-white);
       border-radius: 12px; padding: 14px; margin-bottom: 12px;
     }
     .qhead { margin-bottom: 10px; }
     .qnum { display:inline-block; background: var(--hc-gold); color: var(--hc-navy); font-weight:800; border-radius:6px; padding:2px 9px; margin-right:8px; font-size:13px; }
-    .qtitle { font-weight:600; font-size:15px; }
+    .qtitle { font-weight:600; font-size:15px; color: var(--hc-white); }
     .opt {
       display:flex; align-items:flex-start; padding:10px 12px; margin:7px 0; border-radius:9px;
-      border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03); cursor:pointer; font-size:14px; line-height:1.5;
+      border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03); cursor:pointer;
+      font-size:14px; line-height:1.5; color: var(--hc-white);
     }
     .opt:hover { background: rgba(255,255,255,.07); }
     .opt.sel { border-color: var(--hc-gold); background: rgba(212,168,75,.10); }
-    .opt input { margin: 3px 10px 0 0; flex-shrink:0; }
+    .opt input { margin: 3px 10px 0 0; flex-shrink:0; accent-color: var(--hc-gold); }
 
     .submit-bar {
       position: fixed; left:0; right:0; bottom:0; background: var(--bg);
@@ -73,6 +87,10 @@
 
   <!-- 答题 -->
   <section id="quizView">
+    <div class="name-box">
+      <label for="participantName">姓名<span class="req">*</span></label>
+      <input type="text" id="participantName" maxlength="20" placeholder="请输入你的姓名（必填）" autocomplete="name">
+    </div>
     <div id="quiz"></div>
   </section>
 
