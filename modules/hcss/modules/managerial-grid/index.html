@@ -6,10 +6,15 @@
   <title>管理方格测评 · 主持大屏 | 人力资本战略工作室</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <style>
+    /* 本页深色大屏主题：body 直接深蓝 + 白字，杜绝「深底深字」看不见 */
+    body { background: var(--hc-navy); color: var(--hc-white); }
+    a { color: var(--info); }
+
     .hero-mini {
       max-width: 1080px;
       margin: 24px auto 0;
       padding: 0 20px;
+      color: var(--hc-white);
     }
     .hero-mini h1 { font-size: 24px; margin: 0 0 6px; }
     .hero-mini p { color: var(--sub); font-size: 14px; margin: 0; }
@@ -27,7 +32,7 @@
 
     /* 题目区（大屏可投屏） */
     .quiz-col .quiz-card {
-      background: var(--panel);
+      background: var(--panel); color: var(--hc-white);
       border: 1px solid rgba(255,255,255,.08);
       border-radius: var(--radius);
       padding: 16px 18px;
@@ -38,14 +43,14 @@
       display: inline-block; background: var(--accent); color: var(--hc-navy);
       font-weight: 800; border-radius: 6px; padding: 2px 9px; margin-right: 8px; font-size: 13px;
     }
-    .quiz-col .qtitle { font-weight: 600; font-size: 15px; }
+    .quiz-col .qtitle { font-weight: 600; font-size: 15px; color: var(--hc-white); }
     .quiz-col .opt {
-      display: block; padding: 9px 12px; margin: 6px 0; border-radius: 8px;
+      display: block; padding: 9px 12px; margin: 6px 0; border-radius: 8px; color: var(--hc-white);
       border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03);
       cursor: pointer; font-size: 14px; transition: .15s;
     }
     .quiz-col .opt:hover { background: rgba(255,255,255,.07); }
-    .quiz-col .opt input { margin-right: 9px; vertical-align: middle; }
+    .quiz-col .opt input { margin-right: 9px; vertical-align: middle; accent-color: var(--accent); }
 
     /* 右侧栏：二维码 + 实时看板入口 */
     .side-col { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 16px; }
