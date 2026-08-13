@@ -82,3 +82,4 @@ python <skills>/workbench-integrator/integrate_module.py \
 - 算分逻辑：`quiz_core.py`（与 `modules/hcss/assets/js/grid-core.js` 算法逐字段对齐）。
 - 存储：`data/quiz.db`（运行时生成，首次访问自动建表；Railway 免费版为临时盘，重启会清空，活动前点「清空全部数据」重来即可）。
 
+<!-- 最后部署触发: 2026-08-13 16:36 -->
